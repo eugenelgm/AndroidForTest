@@ -1,7 +1,11 @@
 package com.example.test.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.example.test.db.ItemDAOHelper;
 import com.example.test.util.Logger;
@@ -13,23 +17,40 @@ public class ItemSet {
 	}
 	
 	private List<ItemSetChangeListener> listeners = new LinkedList<ItemSetChangeListener>();
-	private List<Item> items = new LinkedList<Item>();
+	private Map<Long, Item> items = new ConcurrentHashMap<Long, Item>();
 	
 	public ItemSet() {
-		items.addAll(ItemDAOHelper.getAll());
+		List<Item> _items = ItemDAOHelper.getAll();
+		for (Item item : _items) {
+			items.put(item.getId(), item);
+		}
 		Logger.d("list size : %s", items.size());
 		notifying();
 	}
 	
 	public void add(Item item) {
-		items.add(item);
-		ItemDAOHelper.insertOrUpdate(item);
+		long key = ItemDAOHelper.insertOrUpdate(item);
+		item.setId(key);
+		items.put(item.getId(), item);
 		Logger.d("list size : %s", items.size());
 		notifying();
 	}
+	
+	public void add(List<Item> _items) {
+		for (Item item : _items) {
+			items.put(item.getId(), item);
+		}
+		ItemDAOHelper.insertOrUpdate(_items);
+		Logger.d("list size : %s", items.size());
+		notifying();
+	}
+	
+	public Item get(long key) {
+		return items.get(key);
+	}
 
 	public List<Item> getAll() {
-		return items;
+		return new ArrayList<Item>(items.values());
 	}
 	
 	private void notifying() {

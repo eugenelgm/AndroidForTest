@@ -1,6 +1,5 @@
 package com.example.test.util;
 
-
 public class Logger {
 	public static final String TAG = "test";
 	

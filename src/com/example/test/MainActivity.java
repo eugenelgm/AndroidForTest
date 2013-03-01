@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.example.test.model.Item;
 import com.example.test.model.ItemSet.ItemSetChangeListener;
+import com.example.test.util.Logger;
 
 public class MainActivity extends Activity implements ItemSetChangeListener {
 	
@@ -52,6 +53,13 @@ public class MainActivity extends Activity implements ItemSetChangeListener {
 	}
 	
 	@Override
+	protected void onResume() {
+		super.onResume();
+		Logger.d("++ onResume", "");
+		controller.syncWithServer(100L);
+	}
+	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
@@ -66,10 +74,16 @@ public class MainActivity extends Activity implements ItemSetChangeListener {
 	@Override
 	public void onChanged() {
 		if (adapter != null) {
-			adapter.notifyDataSetChanged();
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					Logger.d("notified!", "");
+					adapter.setItems(controller.getAll());
+					adapter.notifyDataSetChanged();
+				}
+			});
 		}
 	}
-
 
 	private static class ViewHolder {
 		TextView textView;
@@ -78,11 +92,15 @@ public class MainActivity extends Activity implements ItemSetChangeListener {
 	private class MainListAdapter extends BaseAdapter {
 		
 		private final Context context;
-		private final List<Item> items;
+		private List<Item> items;
 		
 		MainListAdapter(Context context, List<Item> items) {
 			this.context = context;
 			this.items = items;
+		}
+
+		public void setItems(List<Item> all) {
+			this.items = all;
 		}
 
 		@Override
@@ -119,6 +137,5 @@ public class MainActivity extends Activity implements ItemSetChangeListener {
 		}
 		
 	}
-
 
 }

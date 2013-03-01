@@ -5,7 +5,7 @@ import java.util.Set;
 
 public interface BaseDAO<T> {
 
-	public void insertOrUpdate(T t);
+	public long insertOrUpdate(T t);
 	
 	public void update(T t);
 	

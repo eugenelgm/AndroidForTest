@@ -12,8 +12,12 @@ public class ItemDAOHelper {
 		itemDao = _itemDao;
 	}
 	
-	public static void insertOrUpdate(Item item) {
-		itemDao.insertOrUpdate(item);
+	public static long insertOrUpdate(Item item) {
+		return itemDao.insertOrUpdate(item);
+	}
+	
+	public static void insertOrUpdate(List<Item> items) {
+		itemDao.insertOrUpdate(items);
 	}
 
 	public static List<Item> getAll() {
@@ -26,5 +30,9 @@ public class ItemDAOHelper {
 	
 	public static Item get(long id) {
 		return itemDao.get(id);
+	}
+	
+	public static Item getLastItem() {
+		return itemDao.getLastItem();
 	}
 }

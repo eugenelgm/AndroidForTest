@@ -2,25 +2,25 @@ package com.example.test.db;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.SQLException;
 
 import com.example.test.model.Item;
 
-class ItemDAOImpl extends BaseRecord implements ItemDAO {
+class ItemDAOImpl extends BaseRecord<Item> implements ItemDAO {
 	
 	ItemDAOImpl() {
 	}
 	
+	@Override
 	public ContentValues getContentValues(Item item) {
 		ContentValues values = new ContentValues();
 		values.put(COL_text, item.getText());
 		return values;
 	}
 	
+	@Override
 	public Item populateObject(Cursor cursor) {
 		Item item = new Item();
 		item.setId(cursor.getLong(cursor.getColumnIndex(COL_ID)));
@@ -28,47 +28,9 @@ class ItemDAOImpl extends BaseRecord implements ItemDAO {
 		return item;
 	}
 	
+	@Override
 	public String getWhereClause(Item item) {
 		return COL_ID + "=" + item.getId();
-	}
-
-	@Override
-	public void insertOrUpdate(Item t) {
-		try {
-			getDb().insertOrThrow(TABLE_NAME, null, getContentValues(t));
-		} catch(SQLException e) {
-			getDb().update(TABLE_NAME, getContentValues(t), getWhereClause(t), null);
-		}
-	}
-
-	@Override
-	public void update(Item t) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void insertOrUpdate(List<Item> ts) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public int destroy(long primaryKey) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int destroy(Set<Long> primaryKeys) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void destroyAll() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -102,6 +64,28 @@ class ItemDAOImpl extends BaseRecord implements ItemDAO {
 	public void truncate() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Item getLastItem() {
+		Item item = null;
+		Cursor cursor = getDb().query(TABLE_NAME, null, null,null,null,null,COL_ID +" DESC LIMIT 1");
+		try {
+			if (cursor != null && cursor.getCount() > 0) {
+				item = populateObject(cursor);
+			}
+		} finally {
+			if (cursor != null && !cursor.isClosed()) {
+				cursor.close();
+				cursor = null;
+			}
+		}
+		return item;
+	}
+
+	@Override
+	public String getTableName() {
+		return TABLE_NAME;
 	}
 
 }

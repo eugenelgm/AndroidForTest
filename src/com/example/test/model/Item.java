@@ -1,6 +1,14 @@
 package com.example.test.model;
 
-public class Item {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.content.Context;
+
+import com.example.test.R;
+import com.example.test.db.IdBased;
+
+public class Item implements IdBased {
 
 	private long id;
 	private String text;
@@ -10,7 +18,13 @@ public class Item {
 	public Item(String text) {
 		this.text = text;
 	}
+	
+	public void parse(JSONObject json) throws JSONException {
+		this.id = json.getLong("id");
+		this.text = json.getString("text");
+	}
 
+	@Override
 	public long getId() {
 		return id;
 	}
@@ -25,6 +39,10 @@ public class Item {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+	
+	public String getLocale(Context context) {
+		return context.getString(R.string.locale);
 	}
 	
 }

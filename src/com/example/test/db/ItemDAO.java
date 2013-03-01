@@ -8,4 +8,5 @@ public interface ItemDAO extends BaseDAO<Item> {
 	public static final String COL_ID = "_id";
 	public static final String COL_text = "text1";
 	
+	public Item getLastItem();
 }
