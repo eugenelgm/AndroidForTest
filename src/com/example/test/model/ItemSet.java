@@ -1,7 +1,6 @@
 package com.example.test.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.example.test.db.ItemDAOHelper;
 import com.example.test.util.Logger;
 
-public class ItemSet {
+public class ItemSet extends BaseSet {
 	
 	public interface ItemSetChangeListener {
 		public void onChanged();
@@ -20,12 +19,17 @@ public class ItemSet {
 	private Map<Long, Item> items = new ConcurrentHashMap<Long, Item>();
 	
 	public ItemSet() {
-		List<Item> _items = ItemDAOHelper.getAll();
-		for (Item item : _items) {
-			items.put(item.getId(), item);
-		}
-		Logger.d("list size : %s", items.size());
-		notifying();
+		runOnBackground(new Runnable() {
+			@Override
+			public void run() {
+				List<Item> _items = ItemDAOHelper.getAll();
+				for (Item item : _items) {
+					items.put(item.getId(), item);
+				}
+				Logger.d("list size : %s", items.size());
+				notifying();
+			}
+		});
 	}
 	
 	public void add(Item item) {
